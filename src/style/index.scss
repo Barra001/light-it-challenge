@@ -2,6 +2,13 @@
 
 @font-face {
   font-family: 'Manrope';
+  src: url('./fonts/manrope/Manrope-ExtraLight.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Manrope';
   src: url('./fonts/manrope/Manrope-Light.ttf') format('truetype');
   font-style: normal;
   font-weight: 300;

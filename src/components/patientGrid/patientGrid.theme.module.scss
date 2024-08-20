@@ -1,4 +1,5 @@
 @import "../../style/styleguide.scss";
+@import "../../style/breakpoints.scss";
 
 .mainContainer {
     display: flex;
@@ -8,14 +9,42 @@
     width: 100%;
 }
 
+.title {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.titleLine,
+.line {
+    background-color: $accent-color;
+    height: 2px;
+    width: 60px;
+}
+
+.titleLine {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(250px, 25%));
-    gap: 60px 30px;
+    gap: 80px 30px;
     padding: 0;
     width: 100%;
     align-items: start;
+
+    @include respond-to("tablet") {
+        grid-template-columns: repeat(2, minmax(250px, 50%));
+        gap: 80px 30px;
+    }
+
+    @include respond-to("mobile") {
+        grid-template-columns: repeat(1, minmax(250px, 100%));
+        gap: 80px 0px;
+    }
 }
+
 
 .card {
     display: flex;
@@ -32,9 +61,6 @@
 }
 
 .line {
-    width: 60px;
-    height: 2px;
-    background-color: $accent-color;
     margin-top: 20px;
     margin-bottom: 10px;
 }
@@ -64,19 +90,58 @@
 
 .mainInfo {
     font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
 }
 
-.webLogo {
-    transition: all 0.3s ease;
-    fill: $primary-color;
+.webLink,
+.editButton {
+    transition: all 0.5s ease;
+    color: $primary-color;
     cursor: pointer;
+
 }
 
-.webLogo:hover {
-    fill: $accent-color;
+.webLink,
+.editButton,
+.invalidWeb {
+    font-size: 30px;
+}
+
+
+.readMore {
+    transition: all 0.3s ease;
+    margin-top: 7px;
+    cursor: pointer;
+    font-weight: 200;
+    font-size: 13px;
+    width: 100%;
+}
+
+.readMore:hover {
+    color: $accent-color;
+    text-decoration: underline;
 }
 
 .invalidWeb {
-    fill: rgb(168, 168, 168);
-    cursor: pointer;
+    color: rgb(168, 168, 168);
+    cursor: default;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+
+}
+
+.editButton {
+    margin-bottom: 15px;
+    color: $accent-color;
+}
+
+.editButton:hover,
+.webLink:hover {
+    color: $on-background-color;
 }
