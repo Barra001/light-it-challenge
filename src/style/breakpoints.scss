@@ -1,0 +1,17 @@
+$breakpoints: (
+  "laptop" : "1400px",
+  "mobile" : "768px",
+  "tablet" : "1160px",
+);
+
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. ";
+  }
+}
