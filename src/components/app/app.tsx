@@ -1,37 +1,34 @@
-import { useState } from "react";
-import reactLogo from "../../assets/react.svg";
-import viteLogo from "../../assets/logo.svg";
-import theme from "./app.theme.module.scss";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
+import { getPatients } from "../../repositories/patientRepository";
+import Patient from "../../models/patient";
+import Loader from "../loader/loader";
+import PatientGrid from "../patientGrid/patientGrid";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [patients, setPatients] = useState<Patient[] | undefined>();
+
+  useEffect(() => {
+    const handleGetPatients = async () => {
+      setIsLoading(true);
+      try {
+        const patientsData = await getPatients();
+        setPatients(patientsData);
+        console.log(patients);
+        console.log(isLoading);
+      } catch (e) {
+        alert(e);
+      }
+      setIsLoading(false);
+    };
+    void handleGetPatients();
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className={theme.logo} alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img
-            src={reactLogo}
-            className={theme.logo + " " + theme.react}
-            alt="React logo"
-          />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className={theme.card}>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className={theme.readTheDocs}>
-        Click on the Vite and React logos to learn more
-      </p>
+      {isLoading && <Loader />}
+      <PatientGrid patients={patients || []} />
     </>
   );
 }
