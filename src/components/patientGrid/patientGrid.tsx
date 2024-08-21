@@ -3,6 +3,7 @@ import Patient from "../../models/patient";
 import { useCollapse } from "react-collapsed";
 import FormModal from "../formModal/formModal";
 import { useState } from "react";
+import noImage from "../../assets/user.jpeg";
 
 type PatientGridProps = {
   patients: Patient[];
@@ -33,7 +34,7 @@ function PatientCard({ patient }: PatientCardProps) {
   return (
     <>
       <div className={theme.card}>
-        <img src={patient.avatar} className={theme.avatar} />
+        <img src={patient.avatar ?? noImage} className={theme.avatar} />
         <div className={theme.row}>
           {" "}
           <div className={theme.line}></div>
@@ -55,7 +56,7 @@ function PatientCard({ patient }: PatientCardProps) {
               <br />
               <br />
               <strong>Created at: </strong>{" "}
-              {patient.createdAt.toLocaleDateString("en-US", {
+              {patient.createdAt?.toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -75,10 +76,10 @@ function PatientCard({ patient }: PatientCardProps) {
             </span>
             <a
               href={
-                !patient.website.includes(".") ? undefined : patient.website
+                !patient.website?.includes(".") ? undefined : patient.website
               }
               title={
-                !patient.website.includes(".")
+                !patient.website?.includes(".")
                   ? "Invalid website data!"
                   : undefined
               }
@@ -86,7 +87,7 @@ function PatientCard({ patient }: PatientCardProps) {
               <span
                 className={
                   "material-symbols-outlined " +
-                  (!patient.website.includes(".")
+                  (!patient.website?.includes(".")
                     ? theme.invalidWeb
                     : theme.webLink)
                 }
@@ -98,10 +99,7 @@ function PatientCard({ patient }: PatientCardProps) {
         </div>
       </div>
       {showModal && (
-        <FormModal
-          avatar={patient.avatar}
-          handleClose={() => setShowModal(false)}
-        />
+        <FormModal patient={patient} handleClose={() => setShowModal(false)} />
       )}
     </>
   );
