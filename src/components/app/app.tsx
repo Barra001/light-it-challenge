@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { getPatients } from "../../repositories/patientRepository";
 import Patient from "../../models/patient";
@@ -15,8 +14,6 @@ function App() {
       try {
         const patientsData = await getPatients();
         setPatients(patientsData);
-        console.log(patients);
-        console.log(isLoading);
       } catch (e) {
         alert(e);
       }

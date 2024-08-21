@@ -66,7 +66,6 @@ function FormModal({ handleClose, patient }: FormModalProps) {
 
     if (Object.keys(newErrors).length === 0) {
       // Form submission logic here
-      console.log("Form submitted successfully!");
     } else {
       // send error state to form
       // const form = e.target as HTMLFormElement;
