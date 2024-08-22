@@ -5,6 +5,7 @@ import { useContext } from "react";
 import noImage from "../../assets/user.jpeg";
 import { PatientsContext } from "../../contexts/patientsContext";
 import { ModalContext } from "../../contexts/patientModalContext";
+import { AnimationOnScroll } from "react-animation-on-scroll";
 
 function PatientGrid() {
   const { patients } = useContext(PatientsContext);
@@ -31,7 +32,12 @@ function PatientCard({ patient }: PatientCardProps) {
 
   return (
     <>
-      <div className={theme.card}>
+      <AnimationOnScroll
+        animateIn="animate__slideInUp"
+        duration={0.5}
+        className={theme.card}
+        animateOnce={true}
+      >
         <img src={patient.avatar ?? noImage} className={theme.avatar} />
         <div className={theme.row}>
           {" "}
@@ -100,7 +106,7 @@ function PatientCard({ patient }: PatientCardProps) {
             </a>
           </div>
         </div>
-      </div>
+      </AnimationOnScroll>
     </>
   );
 }

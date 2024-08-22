@@ -8,6 +8,7 @@ import { ModalContext } from "../../contexts/patientModalContext";
 import { SnackbarProvider } from "notistack";
 import FormModal from "../formModal/formModal";
 import AddButton from "../addButton/addButton";
+import "animate.css/animate.min.css";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
