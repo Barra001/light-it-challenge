@@ -1,3 +1,0 @@
-* Resto de tareas obligatorias y opcionales del challenge
-* animaciones en el modal
-* arreglar warn en contextos
