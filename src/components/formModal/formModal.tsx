@@ -1,17 +1,25 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useContext } from "react";
 import Patient from "../../models/patient";
-import SimpleTextInput, { TextAreaInput } from "../textInput/textInput";
+import SimpleTextInput, { TextAreaInput } from "../inputs/textInput";
 import theme from "./formModal.theme.module.scss";
+import { addPatient, editPatient } from "../../repositories/patientRepository";
+import { PatientsContext } from "../../contexts/patientsContext";
+import Logo from "../../assets/spinner.svg";
+import { useSnackbar } from "notistack";
+import noImage from "../../assets/user.jpeg";
+import NumberInput from "../inputs/numberInput";
+import SelectInput from "../inputs/selectInput";
 
 type FormModalProps = {
   handleClose: () => void;
   patient: Patient;
+  show: boolean;
 };
 
 type FormData = {
   name: string;
   age?: number;
-  gender?: string;
+  gender?: number;
   address?: string;
   avatar?: string;
   description: string;
@@ -28,11 +36,17 @@ type FormErrors = {
   website: string;
 };
 
-function FormModal({ handleClose, patient }: FormModalProps) {
+function FormModal({ handleClose, patient, show }: FormModalProps) {
+  const { setPatients } = useContext(PatientsContext);
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const [formData, setFormData] = useState<FormData>({
     name: patient.name,
     age: patient.age,
-    gender: patient.gender,
+    gender: patient.gender
+      ? Patient.possibleLocalGenders.indexOf(patient.gender)
+      : undefined,
     address: patient.address,
     avatar: patient.avatar,
     description: patient.description,
@@ -49,8 +63,10 @@ function FormModal({ handleClose, patient }: FormModalProps) {
     website: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData({
@@ -59,18 +75,48 @@ function FormModal({ handleClose, patient }: FormModalProps) {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     e.preventDefault();
     const newErrors = validateForm(formData);
     setFormErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Form submission logic here
-    } else {
-      // send error state to form
-      // const form = e.target as HTMLFormElement;
-      // form.checkValidity();
+      const editedPatient = new Patient(
+        patient.id,
+        formData.name,
+        formData.description,
+        formData.website,
+        patient.createdAt,
+        formData.avatar,
+        formData.age,
+        formData.gender
+          ? Patient.possibleLocalGenders[formData.gender ?? 0]
+          : undefined,
+        formData.address
+      );
+
+      const isToAdd = patient.id === "";
+
+      try {
+        const newPatientsList = isToAdd
+          ? await addPatient(editedPatient)
+          : await editPatient(editedPatient);
+
+        setPatients(newPatientsList);
+        enqueueSnackbar(
+          `Patient ${isToAdd ? "added" : "edited"} successfully`,
+          { variant: "success" }
+        );
+      } catch {
+        enqueueSnackbar(`Error ${isToAdd ? "adding" : "editing"} patient`, {
+          variant: "error",
+        });
+      }
+      handleClose();
     }
+
+    setIsLoading(false);
   };
 
   const validateForm = (data: FormData) => {
@@ -87,17 +133,17 @@ function FormModal({ handleClose, patient }: FormModalProps) {
     if (!data.name.trim()) {
       errors.name = "Name is required";
     } else if (data.name.length < 4) {
-      errors.name = "Username must be at least 4 characters long";
+      errors.name = "Name must be at least 4 characters long";
     }
 
     if (!data.website.trim()) {
-      errors.website = "Email is required";
-    } else if (!data.website.includes(".com")) {
-      errors.website = "Website is invalid";
+      errors.website = "Website is required";
+    } else if (!data.website.startsWith("https://")) {
+      errors.website = "Website is invalid (must start with https://)";
     }
 
-    if (data.avatar && !data.avatar.includes(".com")) {
-      errors.avatar = "Avatar URL is invalid";
+    if (data.avatar && !data.avatar.startsWith("https://")) {
+      errors.avatar = "Avatar URL is invalid (must start with https://)";
     }
 
     if (!data.description.trim()) {
@@ -107,17 +153,30 @@ function FormModal({ handleClose, patient }: FormModalProps) {
     }
 
     if (data.address && data.address.length < 12) {
-      errors.description = "Address must be at least 12 characters long";
+      errors.address = "Address must be at least 12 characters long";
     }
+
+    if (data.age && data.age <= 0) {
+      errors.age = "Age must be greater than 0";
+    }
+
+    Object.keys(errors).forEach((key) => {
+      if (errors[key as keyof FormErrors] === "") {
+        delete errors[key as keyof FormErrors];
+      }
+    });
 
     return errors;
   };
 
   return (
-    <div className={theme.modalBackdrop} onClick={() => handleClose()}>
+    <div
+      className={theme.modalBackdrop + " " + (show ? "" : theme.hideBackdrop)}
+      onClick={() => handleClose()}
+    >
       <form
         onSubmit={handleSubmit}
-        className={theme.modal}
+        className={theme.modal + " " + (show ? "" : theme.hide)}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={theme.separator}></div>
@@ -135,7 +194,7 @@ function FormModal({ handleClose, patient }: FormModalProps) {
           </div>
           <img
             className={theme.modalImg}
-            src={patient.avatar}
+            src={patient.avatar ?? noImage}
             alt="profile pic"
           />
         </div>
@@ -148,20 +207,21 @@ function FormModal({ handleClose, patient }: FormModalProps) {
           value={formData.name}
         />
         <div className={theme.row}>
-          <SimpleTextInput
+          <NumberInput
             placeholder="Age"
             id="AgeInputId"
             error={formErrors.age}
             onChange={handleChange}
-            value={formData.age?.toString() ?? "0"}
+            value={formData.age ?? 0}
           />
           <div className={theme.separator}></div>
-          <SimpleTextInput
+          <SelectInput
             placeholder="Gender"
             id="GenderInputId"
             error={formErrors.gender}
             onChange={handleChange}
-            value={formData.gender ?? ""}
+            value={formData.gender?.toString() ?? "empty"}
+            options={Patient.possibleLocalGenders}
           />
         </div>
         <div className={theme.row}>
@@ -197,9 +257,28 @@ function FormModal({ handleClose, patient }: FormModalProps) {
           onChange={handleChange}
           value={formData.description}
         />
-        <button className={theme.closeBtn} type="submit">
-          Save
-        </button>
+        <div className={theme.row} style={{ justifyContent: "center" }}>
+          {" "}
+          <button
+            className={theme.closeBtn}
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            Close
+          </button>
+          <div className={theme.separator}></div>
+          {isLoading ? (
+            <img height={50} width={50} src={Logo} className={theme.loader} />
+          ) : (
+            <button
+              className={theme.saveBtn}
+              type="submit"
+              disabled={isLoading}
+            >
+              Save
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

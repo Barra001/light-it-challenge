@@ -1,15 +1,13 @@
 import theme from "./patientGrid.theme.module.scss";
 import Patient from "../../models/patient";
 import { useCollapse } from "react-collapsed";
-import FormModal from "../formModal/formModal";
-import { useState } from "react";
+import { useContext } from "react";
 import noImage from "../../assets/user.jpeg";
+import { PatientsContext } from "../../contexts/patientsContext";
+import { ModalContext } from "../../contexts/patientModalContext";
 
-type PatientGridProps = {
-  patients: Patient[];
-};
-
-function PatientGrid({ patients }: PatientGridProps) {
+function PatientGrid() {
+  const { patients } = useContext(PatientsContext);
   return (
     <div className={theme.mainContainer}>
       <div className={theme.title}>OUR PATIENTS</div>
@@ -29,7 +27,7 @@ type PatientCardProps = {
 
 function PatientCard({ patient }: PatientCardProps) {
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
-  const [showModal, setShowModal] = useState(false);
+  const { setPatientToShow, setShowModal } = useContext(ModalContext);
 
   return (
     <>
@@ -70,16 +68,21 @@ function PatientCard({ patient }: PatientCardProps) {
             {" "}
             <span
               className={"material-symbols-outlined " + theme.editButton}
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                setPatientToShow(patient);
+                setShowModal(true);
+              }}
             >
               edit
             </span>
             <a
               href={
-                !patient.website?.includes(".") ? undefined : patient.website
+                !patient.website?.includes("https://")
+                  ? undefined
+                  : patient.website
               }
               title={
-                !patient.website?.includes(".")
+                !patient.website?.includes("https://")
                   ? "Invalid website data!"
                   : undefined
               }
@@ -87,7 +90,7 @@ function PatientCard({ patient }: PatientCardProps) {
               <span
                 className={
                   "material-symbols-outlined " +
-                  (!patient.website?.includes(".")
+                  (!patient.website?.includes("https://")
                     ? theme.invalidWeb
                     : theme.webLink)
                 }
@@ -98,9 +101,6 @@ function PatientCard({ patient }: PatientCardProps) {
           </div>
         </div>
       </div>
-      {showModal && (
-        <FormModal patient={patient} handleClose={() => setShowModal(false)} />
-      )}
     </>
   );
 }

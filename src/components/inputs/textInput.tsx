@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import theme from "./textInput.theme.module.scss";
+import theme from "./inputs.theme.module.scss";
 
 type TextInputProps = {
   placeholder: string;

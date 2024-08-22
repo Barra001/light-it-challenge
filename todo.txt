@@ -1,6 +1,3 @@
-* formulario en el modal con validación
-* que las fotos tengan algo antes
-* que cuando no haya foto muestre personita y no fotos random
-* Bug cuando tocas Read More en una descripción larga
 * Resto de tareas obligatorias y opcionales del challenge
 * animaciones en el modal
+* arreglar warn en contextos

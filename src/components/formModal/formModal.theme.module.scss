@@ -1,7 +1,18 @@
 @import "../../style/styleguide.scss";
 @import "../../style/breakpoints.scss";
 
+.hide {
+    transform: translateY(120%);
+}
+
+.hideBackdrop {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
 .modalBackdrop {
+    transition: all 0.3s ease;
+    opacity: 1;
     position: fixed;
     top: 0;
     left: 0;
@@ -10,16 +21,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal {
-    width: 420px;
+    transition: all 0.3s ease;
+    width: 500px;
     max-width: 70%;
 
     background-color: $background-color;
     border-radius: 10px;
-    padding: 25px 40px;
+    padding: 18px 40px;
 
     @include respond-to("tablet") {
         padding: 30px;
@@ -32,13 +44,14 @@
     width: 100px;
 }
 
+
 .closeBtn {
-    background-color: $primary-color;
+    background-color: transparent;
     border-radius: 30px;
     cursor: pointer;
     font-size: 16px;
-    padding: 1rem 2rem;
-    margin-top: 2rem;
+    padding: 10px 25px;
+    margin-top: 19px;
     outline: none;
     border: solid $primary-color ;
     font-weight: 600;
@@ -48,7 +61,26 @@
 
 .closeBtn:hover,
 .closeBtn:focus {
-    background-color: transparent;
+    border-color: $on-background-color;
+}
+
+.saveBtn {
+    background-color: $primary-color;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 25px;
+    margin-top: 19px;
+    outline: none;
+    border: solid $primary-color ;
+    font-weight: 600;
+    transition: 0.3s all ease;
+
+}
+
+.saveBtn:hover,
+.saveBtn:focus {
+    border-color: $on-background-color;
     color: #ffff;
 }
 
@@ -84,4 +116,19 @@
 .separator {
     width: 30px;
     height: 10px;
+}
+
+.loader {
+    animation: spin 1s linear infinite;
+    margin-top: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
